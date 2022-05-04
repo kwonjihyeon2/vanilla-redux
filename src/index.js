@@ -1,53 +1,79 @@
-import { createStore } from "redux"
+import {createStore} from 'redux';
 
-const add = document.getElementById("Add")
-const minus = document.getElementById("Minus")
-const number = document.querySelector("span")
+// MUTATION STATE 사용 X 이유?
+// 새로운 객체를 생성하는 것. 원본 state 수정하지말 것
+// 스프레드연산을 통해 복사해서 수정하는 방식을 이용해야한다.
 
-//string 값을 변수로 설정하면 오류를 js에서 쉽게 추적 가능
-const ADD = "ADD"
-const MINUS = "MINUS"
+const form = document.querySelector("form")
+const input = document.querySelector("input")
+const ul = document.querySelector("ul")
 
-const countModifier = (state = 0, action) => {
-   //데이터를 바꾸는 함수
-  // if(action.type === "ADD"){
-  //   return state + 1
-  // } else if(action.type === "MINUS"){
-  //   return state - 1
-  // } else {
-  //   return state
-  // }
+const ADD_TODO = "ADD_TODO"
+const DELETE_TODO = "DELETE_TODO"
 
-  //if 대신 switch, if : case/ else : default
-  switch(action.type){
-    case ADD : 
-      return state + 1
-    case MINUS :
-      return state - 1
-    default :
-      return state;
+const addToDo = (text) => {
+  return{
+    type:ADD_TODO, text
   }
 }
-const store = createStore(countModifier)
 
-const handleAdd = () => {
-  //state를 바꿔주기 위해 action과 dispatch를 연결해주어야함.
-  //dispatch는 object(=>{type: ...})로 작성해주어야함
-  store.dispatch({type:ADD})
+const deleteTodo = (id) => {
+  return{
+    type:DELETE_TODO, id
+  }
 }
 
-const handleMinus = () => {
-  store.dispatch({type:MINUS})
+const reducer = (state = [],action) => {
+  // console.log(action.text)
+  switch (action.type){
+    case ADD_TODO : 
+      return [{text : action.text, id:Date.now()}, ...state];
+    case DELETE_TODO :
+      return [];
+    default : 
+      return state
+  }
 }
 
-number.innerText = 0
+const store = createStore(reducer)
+store.subscribe(()=>console.log(store.getState()))
 
-const onChange = () =>{
-  //HTML 변경 함수
-  number.innerText = store.getState()
+const dispatchAddToDo = (text) => {
+  store.dispatch(addToDo(text))
 }
-//store에 영향을 주기 위해서 함수를 subscribe
-store.subscribe(onChange)
 
-add.addEventListener("click", handleAdd)
-minus.addEventListener("click", handleMinus)
+const dispatchDeleteTodo = (e) => {
+  const id = e.target.parentNode.id
+  store.dispatch(deleteTodo(id))
+}
+
+const paintToDos = () => {
+  let toDos = store.getState()
+  ul.innerHTML = '';
+  toDos.forEach(toDo => {
+    const li = document.createElement("li")
+    const btn = document.createElement("button")
+    btn.addEventListener("click",dispatchDeleteTodo)
+    btn.innerText = "DEL"
+    li.id = toDo.id
+    li.innerText = toDo.text
+    li.appendChild(btn)
+    ul.appendChild(li)
+  })
+}
+
+store.subscribe(paintToDos)
+// const createTodo = (toDo) =>{
+//     const li = document.createElement("li")
+//     li.innerText = toDo;
+//     ul.appendChild(li);
+// }
+
+const onSubmit = (e) =>{
+    e.preventDefault();
+    const toDo = input.value;
+    input.value = '';
+    dispatchAddToDo(toDo)
+}
+
+form.addEventListener("submit", onSubmit)
