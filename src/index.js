@@ -1,7 +1,7 @@
 import {createStore} from 'redux';
 
 // MUTATION STATE 사용 X 이유?
-// 새로운 객체를 생성하는 것. 원본 state 수정하지말 것
+// 새로운 객체를 생성해서 state를 수정하는 것이 안전. 원본 state 수정하지말 것
 // 스프레드연산을 통해 복사해서 수정하는 방식을 이용해야한다.
 
 const form = document.querySelector("form")
@@ -29,7 +29,7 @@ const reducer = (state = [],action) => {
     case ADD_TODO : 
       return [{text : action.text, id:Date.now()}, ...state];
     case DELETE_TODO :
-      return [];
+      return state.filter((toDo)=> toDo.id !== Number(action.id))
     default : 
       return state
   }
@@ -44,6 +44,7 @@ const dispatchAddToDo = (text) => {
 
 const dispatchDeleteTodo = (e) => {
   const id = e.target.parentNode.id
+  // console.log(typeof Number(id), typeof id)
   store.dispatch(deleteTodo(id))
 }
 
