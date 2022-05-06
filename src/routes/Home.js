@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import { connect } from "react-redux";
 import { actionCreators } from "../store";
 import Todo from "./toDo";
 
 function Home({ toDos, addTodo }) {
-  //   console.log(rest);
   const [text, setText] = useState("");
+  const [arr, setArr] = useState([]);
+  //   console.log(todos);
   const onChange = (e) => {
     setText(e.target.value);
   };
@@ -15,11 +17,20 @@ function Home({ toDos, addTodo }) {
     // addTodo(text);
     addTodo(text);
     setText("");
-    // console.log(text)
   };
 
-  //   const result = useSelector(mapStateToProps);
-  //   console.log(result.toDos);
+  useEffect(() => {
+    localStorage.setItem("todo", JSON.stringify(toDos));
+  }, [toDos]);
+
+  useEffect(() => {
+    let temp = [];
+
+    temp = JSON.parse(localStorage.getItem("todo"));
+    // console.log(temp);
+    setArr(temp);
+  }, []);
+  console.log(arr, toDos);
 
   return (
     <>
@@ -29,8 +40,8 @@ function Home({ toDos, addTodo }) {
         <button>Add</button>
       </form>
       <ul>
-        {toDos.map((toDo) => (
-          <Todo {...toDo} key={toDo.id} />
+        {toDos.map((el) => (
+          <Todo {...el} key={el.id} />
         ))}
       </ul>
     </>
