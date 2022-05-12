@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .container {
+        border: 5px solid #000;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="red"></div>
+    <script type="text/javascript">
+      function red() {
+        document.querySelector("#red").innerHTML = `
+        <div class="container" id="component_red">
+            <h1>red</h1>
+            <input type="button" value="fire" onclick="" />
+        </div>`;
+      }
+    </script>
+  </body>
+</html>
